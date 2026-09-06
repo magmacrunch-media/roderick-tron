@@ -85,16 +85,42 @@ World.prototype.drawMoon = function (ctx, cam) {
     ctx.beginPath(); ctx.arc(mx - 6, my - 4, 11, 0, Math.PI * 2); ctx.fill();
 };
 
+// Both backdrop layers are indexed by WORLD position, not by a slot on
+// screen, and the loop covers the view rather than a fixed count.
+//
+// They used to walk ten and twelve buildings leftward from a modulo and never
+// replenish on the right, so the whole row slid off the screen: past an offset
+// of about 285 the mid layer left the right-hand side of the frame as bare sky
+// and haze. At 96-tile levels that is the last 40% of every level. The far
+// layer escaped only because its 0.18 factor never drove the offset high
+// enough -- it would have gone the same way past roughly 124 tiles, which a
+// longer level would have found.
+//
+// Anchoring to the world also gives a building a stable identity: its size and
+// its lit windows follow it rather than following the slot it happens to
+// occupy, so nothing about it changes as it crosses the screen.
+const spanIndices = function (off, spacing, width) {
+    const first = Math.floor(off / spacing) - 1;
+    const last = Math.ceil((off + width) / spacing) + 1;
+    return { first: first, last: last };
+};
+
+// A positive remainder. `i` is now a world index and goes negative to the left
+// of the origin, where the % operator would hand back a negative and pick the
+// wrong building out of the pattern.
+const cycle = function (i, n) { return ((i % n) + n) % n; };
+
 World.prototype.drawFar = function (ctx, cam) {
     const off = cam.x * 0.18;
     const base = CONFIG.CANVAS_H - 20 + cam.y * 0.06;
+    const range = spanIndices(off, 90, CONFIG.CANVAS_W);
     ctx.fillStyle = '#161022';
-    for (let i = 0; i < 10; i++) {
-        const bx = Math.round(((i * 90) - (off % (90 * 10))) - 90);
-        const bw = 30 + (i % 3) * 15;
-        const bh = 40 + (i % 4) * 20;
+    for (let i = range.first; i <= range.last; i++) {
+        const bx = Math.round((i * 90) - off);
+        const bw = 30 + cycle(i, 3) * 15;
+        const bh = 40 + cycle(i, 4) * 20;
         ctx.fillRect(bx, base - bh, bw, bh);
-        if (i % 3 === 0) {
+        if (cycle(i, 3) === 0) {
             ctx.fillRect(bx + bw / 2 - 3, base - bh - 20, 6, 20);
             ctx.fillRect(bx + bw / 2 - 1, base - bh - 28, 2, 8);
         }
@@ -109,10 +135,11 @@ World.prototype.drawFar = function (ctx, cam) {
 World.prototype.drawMid = function (ctx, cam) {
     const off = cam.x * 0.45;
     const base = CONFIG.CANVAS_H - 10 + cam.y * 0.12;
-    for (let i = 0; i < 12; i++) {
-        const bx = Math.round(((i * 70) - (off % (70 * 12))) - 70);
-        const bw = 40 + (i % 3) * 12;
-        const bh = 50 + (i % 4) * 15;
+    const range = spanIndices(off, 70, CONFIG.CANVAS_W);
+    for (let i = range.first; i <= range.last; i++) {
+        const bx = Math.round((i * 70) - off);
+        const bw = 40 + cycle(i, 3) * 12;
+        const bh = 50 + cycle(i, 4) * 15;
         const by = base - bh;
 
         ctx.fillStyle = '#1c1016';
@@ -131,7 +158,7 @@ World.prototype.drawMid = function (ctx, cam) {
         }
         for (let wy = 0; wy < 3; wy++) {
             for (let wx = 0; wx < 2; wx++) {
-                const on = ((i * 7 + wy * 3 + wx) % 5) === 0;
+                const on = cycle(i * 7 + wy * 3 + wx, 5) === 0;
                 ctx.fillStyle = on ? 'rgba(255, 207, 106, 0.22)' : '#140809';
                 ctx.fillRect(bx + 6 + wx * 16, by + 8 + wy * 14, 6, 8);
             }
