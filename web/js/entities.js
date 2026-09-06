@@ -463,7 +463,7 @@ Entities.prototype.drawBell = function (ctx, b, camX, camY) {
     ctx.fillRect(x + b.w - 4, y - 3, 2, 4);
 
     Renderer.glow(ctx, cx, cy, b.holding ? 22 : 14, '201,162,39', b.holding ? 0.34 : 0.18);
-    ctx.fillStyle = b.holding ? '#f0d060' : C.bellBrass;
+    ctx.fillStyle = b.holding ? C.bellBrassLit : C.bellBrass;
     ctx.fillRect(x + 4, y + 3, b.w - 8, b.h - 9);
     ctx.fillRect(x + 2, y + b.h - 8, b.w - 4, 4);
     ctx.fillStyle = C.bellShadow;
@@ -481,6 +481,7 @@ Entities.prototype.drawBell = function (ctx, b, camX, camY) {
  * moment it is the only thing that matters.
  */
 Entities.prototype.drawBellAims = function (ctx, camX, camY) {
+    const C = CONFIG.COLORS;
     for (let i = 0; i < this.bells.length; i++) {
         const b = this.bells[i];
         if (b.angle === undefined) continue;
@@ -491,16 +492,15 @@ Entities.prototype.drawBellAims = function (ctx, camX, camY) {
             const px = Math.round(cx + Math.cos(b.angle) * d);
             const py = Math.round(cy + Math.sin(b.angle) * d);
             if (b.holding) {
-                ctx.fillStyle = 'rgba(0, 245, 255, 0.35)';
+                ctx.fillStyle = C.bellSpark;
                 ctx.fillRect(px - 2, py - 2, 4, 4);
             }
-            ctx.fillStyle = b.holding ? C_CYAN : 'rgba(201, 162, 39, 0.55)';
+            ctx.fillStyle = b.holding ? C.robotCyan : C.bellTrail;
             ctx.fillRect(px - 1, py - 1, 2, 2);
         }
     }
 };
 
-const C_CYAN = '#00f5ff';
 
 Entities.prototype.drawEnemy = function (ctx, e, camX, camY) {
     const x = Math.round(e.x - camX);
@@ -521,7 +521,7 @@ Entities.prototype.drawEnemy = function (ctx, e, camX, camY) {
     }
 
     if (e.kind === 'statue') {
-        ctx.fillStyle = lit ? '#ffffff' : C.statueStone;
+        ctx.fillStyle = lit ? C.enemyLit : C.statueStone;
         ctx.fillRect(x, y - 2, 14, 16);
         ctx.fillStyle = C.gargoyleDark;
         ctx.fillRect(x + 2, y + 1, 3, 3);
@@ -534,11 +534,11 @@ Entities.prototype.drawEnemy = function (ctx, e, camX, camY) {
         return;
     }
 
-    ctx.fillStyle = lit ? '#ffffff' : C.gargoyleStone;
+    ctx.fillStyle = lit ? C.enemyLit : C.gargoyleStone;
     ctx.fillRect(x + 2, y + 4, 10, 8);
     ctx.fillRect(x + 4, y + 1, 6, 5);
     if (!lit) {
-        ctx.fillStyle = '#4a4a5c';
+        ctx.fillStyle = C.gargoyleShade;
         ctx.fillRect(x + 2, y + 10, 10, 2);
         ctx.fillRect(x + 3, y + 4, 1, 6);
     }
@@ -548,7 +548,7 @@ Entities.prototype.drawEnemy = function (ctx, e, camX, camY) {
     ctx.fillRect(x + 1, y + 10, 2, 2);
     ctx.fillRect(x + 11, y + 10, 2, 2);
 
-    ctx.fillStyle = 'rgba(255, 61, 110, 0.25)';
+    ctx.fillStyle = C.gargoyleEyeGlow;
     ctx.fillRect(x + 4, y + 1, 4, 4);
     ctx.fillRect(x + 8, y + 1, 4, 4);
     ctx.fillStyle = C.gargoyleEye;

@@ -229,5 +229,19 @@ const CONFIG = {
         canalSheen:    'rgba(122, 255, 200, 0.10)',
         exitDoor:      '#1a1018',
         exitDoorDeep:  '#0d1a16',
+
+        // ── Entities ──
+        // Four of these shadow a key above at a different alpha, which is
+        // what a palette scattered through draw calls quietly produces:
+        // bellSpark is robotCyan at 0.35, bellTrail is bellBrass at 0.55,
+        // gargoyleEyeGlow is gargoyleEye at 0.25. Retune one of those and
+        // its shadow keeps the old hue, so change them in pairs until
+        // something derives them.
+        bellBrassLit:    '#f0d060',
+        bellSpark:       'rgba(0, 245, 255, 0.35)',
+        bellTrail:       'rgba(201, 162, 39, 0.55)',
+        enemyLit:        '#ffffff',
+        gargoyleShade:   '#4a4a5c',
+        gargoyleEyeGlow: 'rgba(255, 61, 110, 0.25)',
     },
 };
