@@ -212,5 +212,22 @@ const CONFIG = {
         hazeTop:      'rgba(26, 16, 40, 0.0)',
         hazeMid:      'rgba(26, 16, 40, 0.35)',
         hazeLow:      'rgba(13, 42, 74, 0.55)',
+
+        // ── Playfield ──
+        // The last of the literals that lived in world.js's draw calls.
+        // Named for what they draw rather than what they are: the lip and
+        // sheen are a roof tile catching light, railIronLit is the rail's
+        // top edge doing the same, and the draught pair is the chimney
+        // updraught -- edges and specks only, so it reads as flow rather
+        // than as a column you could stand on.
+        roofTileLip:   '#b05a38',
+        roofTileSheen: 'rgba(255, 200, 150, 0.10)',
+        windowGlow:    'rgba(255, 207, 106, 0.10)',
+        draughtEdge:   'rgba(255, 232, 180, 0.05)',
+        draughtSpeck:  'rgba(255, 236, 190, 0.13)',
+        railIronLit:   '#8f96a8',
+        canalSheen:    'rgba(122, 255, 200, 0.10)',
+        exitDoor:      '#1a1018',
+        exitDoorDeep:  '#0d1a16',
     },
 };

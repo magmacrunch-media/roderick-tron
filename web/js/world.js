@@ -225,9 +225,9 @@ World.prototype.drawTiles = function (ctx, cam) {
                     ctx.fillRect(x, y, T, 4);
                     ctx.fillStyle = C.roofTileDark;
                     ctx.fillRect(x, y, T, 2);
-                    ctx.fillStyle = '#b05a38';
+                    ctx.fillStyle = CONFIG.COLORS.roofTileLip;
                     ctx.fillRect(x, y + 4, T, 1);
-                    ctx.fillStyle = 'rgba(255, 200, 150, 0.10)';
+                    ctx.fillStyle = CONFIG.COLORS.roofTileSheen;
                     ctx.fillRect(x, y + 5, T, 2);
                 }
 
@@ -235,7 +235,7 @@ World.prototype.drawTiles = function (ctx, cam) {
                 if (this.map.tileAt(tx, ty - 1) === TILE_SOLID && ((tx * 7 + ty * 13) % 7) === 0) {
                     ctx.fillStyle = C.windowLit;
                     ctx.fillRect(x + 5, y + 5, 6, 7);
-                    ctx.fillStyle = 'rgba(255, 207, 106, 0.10)';
+                    ctx.fillStyle = CONFIG.COLORS.windowGlow;
                     ctx.fillRect(x + 2, y + 2, 12, 13);
                 }
             } else if (ch === TILE_PLATFORM) {
@@ -252,9 +252,9 @@ World.prototype.drawTiles = function (ctx, cam) {
                 // lighter column that reads as a tower you would walk into,
                 // which is the opposite of what it is. Edges and moving specks
                 // only, so the eye sees flow rather than substance.
-                ctx.fillStyle = 'rgba(255, 232, 180, 0.05)';
+                ctx.fillStyle = CONFIG.COLORS.draughtEdge;
                 ctx.fillRect(x + 2, y, T - 4, T);
-                ctx.fillStyle = 'rgba(255, 236, 190, 0.13)';
+                ctx.fillStyle = CONFIG.COLORS.draughtSpeck;
                 ctx.fillRect(x + 1, y, 1, T);
                 ctx.fillRect(x + T - 2, y, 1, T);
                 for (let k = 0; k < 3; k++) {
@@ -275,14 +275,14 @@ World.prototype.drawTiles = function (ctx, cam) {
                 for (let k = 0; k < T; k += 5) ctx.fillRect(x + k, y + 3, 3, 4);
                 ctx.fillStyle = C.railIron;
                 ctx.fillRect(x, y, T, 2);
-                ctx.fillStyle = '#8f96a8';
+                ctx.fillStyle = CONFIG.COLORS.railIronLit;
                 ctx.fillRect(x, y, T, 1);
                 ctx.fillStyle = C.railTie;
                 ctx.fillRect(x, y + 7, T, 1);
             } else if (ch === TILE_WATER) {
                 ctx.fillStyle = C.canalBlue;
                 ctx.fillRect(x, y, T, T);
-                ctx.fillStyle = 'rgba(122, 255, 200, 0.10)';
+                ctx.fillStyle = CONFIG.COLORS.canalSheen;
                 ctx.fillRect(x, y + 1, T, 1);
             }
         }
@@ -329,11 +329,11 @@ World.prototype.drawExit = function (ctx, cam) {
 
     // A lit doorway in a gable end: the one warm thing on the screen.
     Renderer.glow(ctx, x + 8, y + 16, 26, '122,255,200', 0.26);
-    ctx.fillStyle = '#1a1018';
+    ctx.fillStyle = CONFIG.COLORS.exitDoor;
     ctx.fillRect(x, y, 16, 32);
     ctx.fillStyle = CONFIG.COLORS.exitGlow;
     ctx.fillRect(x + 3, y + 6, 10, 26);
-    ctx.fillStyle = '#0d1a16';
+    ctx.fillStyle = CONFIG.COLORS.exitDoorDeep;
     ctx.fillRect(x + 5, y + 10, 6, 22);
     ctx.fillStyle = CONFIG.COLORS.gableStone;
     ctx.fillRect(x - 1, y + 2, 18, 4);
