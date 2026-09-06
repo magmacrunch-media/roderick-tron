@@ -79,7 +79,7 @@ World.prototype.drawMoon = function (ctx, cam) {
     const mx = 372 - cam.x * 0.03;
     const my = 46 - cam.y * 0.05;
     Renderer.glow(ctx, mx, my, 30, '240,234,216', 0.10);
-    ctx.fillStyle = '#d8d0bc';
+    ctx.fillStyle = CONFIG.COLORS.moonDisc;
     ctx.beginPath(); ctx.arc(mx, my, 13, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = CONFIG.COLORS.sky;
     ctx.beginPath(); ctx.arc(mx - 6, my - 4, 11, 0, Math.PI * 2); ctx.fill();
@@ -114,7 +114,7 @@ World.prototype.drawFar = function (ctx, cam) {
     const off = cam.x * 0.18;
     const base = CONFIG.CANVAS_H - 20 + cam.y * 0.06;
     const range = spanIndices(off, 90, CONFIG.CANVAS_W);
-    ctx.fillStyle = '#161022';
+    ctx.fillStyle = CONFIG.COLORS.farBuilding;
     for (let i = range.first; i <= range.last; i++) {
         const bx = Math.round((i * 90) - off);
         const bw = 30 + cycle(i, 3) * 15;
@@ -126,7 +126,7 @@ World.prototype.drawFar = function (ctx, cam) {
         }
     }
     const wx = Math.round(200 - (off % 700));
-    ctx.fillStyle = '#151020';
+    ctx.fillStyle = CONFIG.COLORS.farWindmill;
     ctx.fillRect(wx, base - 60, 8, 40);
     ctx.fillRect(wx - 15, base - 60, 38, 3);
     ctx.fillRect(wx + 3, base - 75, 3, 33);
@@ -142,7 +142,7 @@ World.prototype.drawMid = function (ctx, cam) {
         const bh = 50 + cycle(i, 4) * 15;
         const by = base - bh;
 
-        ctx.fillStyle = '#1c1016';
+        ctx.fillStyle = CONFIG.COLORS.midBuilding;
         ctx.fillRect(bx, by, bw, bh);
 
         // Stepped gable (trapgevel) — a silhouette on this layer, where it can
@@ -151,15 +151,15 @@ World.prototype.drawMid = function (ctx, cam) {
         for (let s = 0; s < 4; s++) {
             const w = bw - s * tread * 2;
             if (w <= 0) break;
-            ctx.fillStyle = '#241519';
+            ctx.fillStyle = CONFIG.COLORS.midGable;
             ctx.fillRect(bx + s * tread, by - (s + 1) * 4, w, 5);
-            ctx.fillStyle = '#2d1b20';
+            ctx.fillStyle = CONFIG.COLORS.midGableLip;
             ctx.fillRect(bx + s * tread, by - (s + 1) * 4, w, 1);
         }
         for (let wy = 0; wy < 3; wy++) {
             for (let wx = 0; wx < 2; wx++) {
                 const on = cycle(i * 7 + wy * 3 + wx, 5) === 0;
-                ctx.fillStyle = on ? 'rgba(255, 207, 106, 0.22)' : '#140809';
+                ctx.fillStyle = on ? CONFIG.COLORS.midWindowLit : CONFIG.COLORS.midWindowOff;
                 ctx.fillRect(bx + 6 + wx * 16, by + 8 + wy * 14, 6, 8);
             }
         }
@@ -181,9 +181,9 @@ World.prototype.drawMid = function (ctx, cam) {
  */
 World.prototype.drawHaze = function (ctx) {
     const g = ctx.createLinearGradient(0, 0, 0, CONFIG.CANVAS_H);
-    g.addColorStop(0, 'rgba(26, 16, 40, 0.0)');
-    g.addColorStop(0.55, 'rgba(26, 16, 40, 0.35)');
-    g.addColorStop(1, 'rgba(13, 42, 74, 0.55)');
+    g.addColorStop(0, CONFIG.COLORS.hazeTop);
+    g.addColorStop(0.55, CONFIG.COLORS.hazeMid);
+    g.addColorStop(1, CONFIG.COLORS.hazeLow);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, CONFIG.CANVAS_W, CONFIG.CANVAS_H);
 };

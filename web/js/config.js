@@ -194,5 +194,23 @@ const CONFIG = {
         trolleyBody:  '#4a3428',
         trolleyIron:  '#8892a4',
         trolleyCoal:  '#1a1620',
+
+        // ── Backdrop ──
+        // The parallax layers, which used to be hex literals scattered
+        // through world.js's draw functions. They live here because they
+        // are what gets tuned: the far and mid layers currently separate
+        // by about two luminance steps out of 255, which is the right
+        // direction and far too small a margin to read as two depths.
+        moonDisc:     '#d8d0bc',
+        farBuilding:  '#161022',
+        farWindmill:  '#151020',
+        midBuilding:  '#1c1016',
+        midGable:     '#241519',
+        midGableLip:  '#2d1b20',
+        midWindowOff: '#140809',
+        midWindowLit: 'rgba(255, 207, 106, 0.22)',
+        hazeTop:      'rgba(26, 16, 40, 0.0)',
+        hazeMid:      'rgba(26, 16, 40, 0.35)',
+        hazeLow:      'rgba(13, 42, 74, 0.55)',
     },
 };
