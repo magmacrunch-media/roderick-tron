@@ -243,5 +243,8 @@ const CONFIG = {
         enemyLit:        '#ffffff',
         gargoyleShade:   '#4a4a5c',
         gargoyleEyeGlow: 'rgba(255, 61, 110, 0.25)',
+        // robotCyan again, at 0.3 -- the halo behind the eyes, with
+        // robotCyan itself as the bright core drawn over it.
+        robotEyeGlow:    'rgba(0, 245, 255, 0.3)',
     },
 };

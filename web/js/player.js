@@ -375,7 +375,7 @@ Player.prototype.draw = function (ctx, camX, camY) {
 
     // Eyes, offset toward the way he is facing
     const ex = f > 0 ? 1 : -1;
-    ctx.fillStyle = 'rgba(0, 245, 255, 0.3)';
+    ctx.fillStyle = C.robotEyeGlow;
     ctx.fillRect(x + 2 + ex, y + 1, 4, 4);
     ctx.fillRect(x + 8 + ex, y + 1, 4, 4);
     ctx.fillStyle = C.robotCyan;
