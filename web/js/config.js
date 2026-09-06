@@ -204,7 +204,7 @@ const CONFIG = {
         moonDisc:     '#d8d0bc',
         farBuilding:  '#161022',
         farWindmill:  '#151020',
-        midBuilding:  '#1c1016',
+        midBuilding:  '#150b11',
         midGable:     '#241519',
         midGableLip:  '#2d1b20',
         midWindowOff: '#140809',
