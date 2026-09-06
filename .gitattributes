@@ -1,0 +1,18 @@
+# Line endings for web/, which `make sync-<game>` in the website repo copies
+# into arcade/ verbatim.
+#
+# Deliberately no eol pin here, matching the website repo, which leaves html,
+# css and js to each clone's core.autocrlf. The sync is a byte copy, so the two
+# repos have to agree: pinning web/ to LF while the website checks arcade/ out
+# as CRLF leaves that repo full of files git reports as modified even though
+# `git diff` shows nothing -- normalisation hides it, so the content is
+# identical and only the bytes on disk differ. Noise, not damage, but it buries
+# the one file that did change. Agreeing costs nothing: both repos normalise to
+# LF in the index, so what is committed is LF either way.
+#
+# Pinned below are the files CRLF breaks outright on Linux rather than merely
+# making untidy: a trailing \r on a shebang gives "bad interpreter", and a
+# workflow's `run:` block is handed to a Linux shell verbatim.
+*.sh        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf

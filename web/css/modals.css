@@ -1,0 +1,168 @@
+/* modals.css — Roderick Tron */
+
+.game-over-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 8, 8, 0.85);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+.game-over-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.game-over-box {
+    text-align: center;
+    padding: 30px 40px;
+    border: 2px solid var(--cyan);
+    background: rgba(10, 10, 18, 0.95);
+    max-width: 360px;
+}
+
+.game-over-box h2 {
+    font-size: 20px;
+    color: var(--red);
+    text-shadow: 0 0 12px rgba(255, 61, 110, 0.5);
+    margin-bottom: 16px;
+    letter-spacing: 0.15em;
+}
+
+.game-over-box .final-score {
+    font-size: 12px;
+    color: var(--white);
+    margin-bottom: 8px;
+}
+
+.game-over-box .final-distance {
+    font-size: 10px;
+    color: var(--gold);
+    margin-bottom: 24px;
+}
+
+.game-over-box .prompt {
+    font-size: 8px;
+    color: var(--white);
+    letter-spacing: 0.12em;
+    animation: blink 1s step-end infinite;
+}
+
+/* High scores */
+.high-scores {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.high-scores h3 {
+    font-size: 8px;
+    color: var(--gold);
+    margin-bottom: 10px;
+    letter-spacing: 0.1em;
+}
+
+.score-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: var(--white);
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.score-row.fresh {
+    color: var(--cyan);
+}
+
+.score-row.empty {
+    justify-content: center;
+    color: var(--dim);
+}
+
+.score-row .rank {
+    color: var(--gold);
+    width: 24px;
+}
+
+.score-row .initials {
+    color: var(--cyan);
+    flex: 1;
+    text-align: center;
+}
+
+.score-row .pts {
+    color: var(--white);
+    width: 60px;
+    text-align: right;
+}
+
+/* Initials prompt */
+.initials-prompt {
+    margin-top: 16px;
+    text-align: center;
+}
+
+.initials-prompt label {
+    font-size: 7px;
+    color: var(--dim);
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+}
+
+.initials-input {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--cyan);
+    background: transparent;
+    border: 2px solid var(--cyan);
+    padding: 6px 10px;
+    width: 70px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    outline: none;
+}
+
+.initials-input:focus {
+    box-shadow: 0 0 12px rgba(0, 245, 255, 0.4);
+}
+
+.initials-submit {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--cyan);
+    background: transparent;
+    border: 2px solid var(--cyan);
+    padding: 6px 14px;
+    margin-left: 8px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.15s;
+}
+
+.initials-submit:hover {
+    background: var(--cyan);
+    color: var(--bg);
+}
+
+/* ── Level-clear / game-over body ───────────────────────── */
+
+.overlay-body {
+    font-size: 9px;
+    color: var(--white);
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+.overlay-body .stat {
+    color: var(--gold);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+}

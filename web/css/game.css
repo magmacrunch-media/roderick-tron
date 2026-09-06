@@ -1,0 +1,169 @@
+/* game.css — Roderick Tron */
+
+.game-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    z-index: 1;
+}
+
+/* Renderer.fit() sets the pixel size on this element every resize so one game
+   pixel covers a whole number of screen pixels wherever there is room. */
+.game-container canvas {
+    max-width: 100vw;
+    max-height: 100vh;
+    display: block;
+}
+
+/* HUD overlay. Sits below the shared .mc-back link, which arcade-base.css
+   pins at top:12px — the score used to be printed underneath it. */
+.hud {
+    position: fixed;
+    top: 34px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.hud.active {
+    opacity: 1;
+}
+
+.hud-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hud-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.hud-score {
+    font-size: 10px;
+    color: var(--white);
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
+    letter-spacing: 0.1em;
+}
+
+.hud-lives {
+    display: flex;
+    gap: 4px;
+}
+
+.hud-life {
+    width: 8px;
+    height: 8px;
+    background: var(--red);
+    border-radius: 0;
+    box-shadow: 0 0 4px rgba(255, 61, 110, 0.5);
+}
+
+.hud-life.lost {
+    background: var(--dim);
+    opacity: 0.3;
+    box-shadow: none;
+}
+
+.hud-speed {
+    font-size: 7px;
+    color: var(--gold);
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
+    letter-spacing: 0.1em;
+}
+
+.hud-combo {
+    /* Reserve the line even when empty. Without this the element collapses to
+       zero height and the music indicator below it hops up and down every time
+       a streak starts or lapses. */
+    min-height: 12px;
+    font-size: 10px;
+    color: var(--cyan);
+    text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.hud-music {
+    font-size: 9px;
+    color: var(--gold);
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
+    letter-spacing: 0.1em;
+    transition: color 0.15s, opacity 0.15s;
+}
+
+.hud-music.muted {
+    color: var(--dim);
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+/* ── Platformer HUD ─────────────────────────────────────── */
+
+.hud-counts {
+    display: flex;
+    gap: 10px;
+    font-size: 8px;
+    color: var(--white);
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
+}
+
+.hud-ammo { color: var(--cyan); }
+
+.hud-letters {
+    display: flex;
+    gap: 4px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+}
+
+/* Uncollected letters stay legible but clearly unearned, so the row reads as
+   a checklist rather than as decoration. */
+.hud-letters .letter {
+    color: var(--dim);
+    opacity: 0.4;
+}
+
+.hud-letters .letter.got {
+    color: var(--gold);
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 224, 58, 0.7);
+}
+
+/* The companion sits in the life row: having it is one free hit. */
+.hud-bird {
+    width: 8px;
+    height: 8px;
+    background: #c8a24a;
+    box-shadow: 0 0 5px rgba(200, 162, 74, 0.7);
+    clip-path: polygon(0 50%, 60% 0, 100% 35%, 70% 100%);
+}
+
+/* ── Banner ─────────────────────────────────────────────── */
+
+.banner {
+    position: fixed;
+    top: 22%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--white);
+    text-shadow: 0 0 12px rgba(0, 245, 255, 0.6), 0 2px 0 rgba(0,0,0,0.8);
+    pointer-events: none;
+    z-index: 60;
+}

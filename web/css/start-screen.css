@@ -1,0 +1,79 @@
+/* start-screen.css — Roderick Tron */
+
+.title-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center bottom, #3a1830 0%, #1a1028 50%, #080808 100%);
+    transition: opacity 0.4s, visibility 0s 0.4s;
+}
+
+/* visibility, not just opacity: a fully transparent overlay still sits on top
+   of the canvas and still takes the pointer. */
+.title-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.title-screen h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(18px, 4vw, 32px);
+    color: var(--cyan);
+    text-shadow:
+        0 0 10px rgba(0, 245, 255, 0.6),
+        0 0 30px rgba(0, 245, 255, 0.3);
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.title-screen .subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(7px, 1.5vw, 10px);
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 48px;
+    text-transform: lowercase;
+}
+
+.title-screen .controls-hint {
+    font-size: 7px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.title-screen .start-prompt {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--white);
+    letter-spacing: 0.15em;
+    animation: blink 1s step-end infinite;
+    margin-top: 24px;
+}
+
+.title-screen .copyright {
+    position: absolute;
+    bottom: 20px;
+    font-size: 7px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+}
+
+/* One line of technique under the control list — the roll-jump is the thing
+   the levels are built around and the one move nobody guesses. */
+.title-screen .controls-note {
+    font-size: 7px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    margin-top: 10px;
+    opacity: 0.85;
+    text-align: center;
+}

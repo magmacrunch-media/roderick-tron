@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RODERICK TRON — magmacrunch media</title>
+    <link rel="icon" href="../../arcade/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/arcade-base.css?v=de5e0d7b">
+    <link rel="stylesheet" href="css/base.css?v=2c415a70">
+    <link rel="stylesheet" href="css/start-screen.css?v=b9e12151">
+    <link rel="stylesheet" href="css/game.css?v=9af4b25a">
+    <link rel="stylesheet" href="css/modals.css?v=ed285048">
+</head>
+<body>
+<a href="../action/" class="mc-back">action games</a>
+
+<!-- Title Screen -->
+<div id="titleScreen" class="title-screen">
+    <h1>RODERICK<br>TRON</h1>
+    <p class="subtitle">rooftop requiem</p>
+    <div class="controls-hint">
+        &larr; &rarr; &mdash; walk &nbsp;&middot;&nbsp; SHIFT &mdash; run<br>
+        SPACE &mdash; jump (hold for height)<br>
+        X &mdash; roll &nbsp;&middot;&nbsp; Z &mdash; fire a note<br>
+        M &mdash; music on / off
+    </div>
+    <div class="controls-note">roll off a ledge, then jump, to clear the long gaps</div>
+    <div class="start-prompt">PRESS SPACE</div>
+    <p class="copyright">&copy; 2026 MAGMACRUNCH MEDIA</p>
+</div>
+
+<!-- Game Canvas -->
+<div id="gameContainer" class="game-container">
+    <canvas id="gameCanvas" width="480" height="270"></canvas>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hud">
+    <div class="hud-left">
+        <div class="hud-score" id="scoreDisplay">000000</div>
+        <div class="hud-lives" id="livesDisplay"></div>
+    </div>
+    <div class="hud-right">
+        <div class="hud-letters" id="lettersDisplay"></div>
+        <div class="hud-counts">
+            <span class="hud-notes" id="notesDisplay">&#9834; 0</span>
+            <span class="hud-ammo" id="ammoDisplay">&#9833; 0</span>
+        </div>
+        <div class="hud-music" id="musicDisplay">&#9834;</div>
+    </div>
+</div>
+
+<div id="banner" class="banner"></div>
+
+<!-- Level clear / game over -->
+<div id="gameOverOverlay" class="game-over-overlay">
+    <div class="game-over-box">
+        <h2 id="overlayTitle">FIN</h2>
+        <div class="overlay-body" id="overlayBody"></div>
+        <div class="prompt" id="overlayPrompt">PRESS SPACE TO RETRY</div>
+    </div>
+</div>
+
+<script src="../shared/adenosine-audio.js?v=d96fbb5f"></script>
+<script src="js/config.js?v=bee06086"></script>
+<script src="js/levels.js?v=09752992"></script>
+<script src="js/tilemap.js?v=0cd127be"></script>
+<script src="js/input.js?v=721f602a"></script>
+<script src="js/sfx.js?v=cbc24098"></script>
+<script src="js/renderer.js?v=135b92ef"></script>
+<script src="js/player.js?v=3e4e38b5"></script>
+<script src="js/entities.js?v=20e28589"></script>
+<script src="js/world.js?v=4faf426e"></script>
+<script src="js/main.js?v=5e5ec78c"></script>
+</body>
+</html>

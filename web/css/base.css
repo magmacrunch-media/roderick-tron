@@ -1,0 +1,59 @@
+/* base.css — Roderick Tron | MagmaCrunch Media © 2026 */
+
+:root {
+    --bg:        #080808;
+    --white:     #f0ead8;
+    --cyan:      #00f5ff;
+    --red:       #ff3d6e;
+    --gold:      #ffe03a;
+    --orange:    #ff7c1f;
+    --dim:       #4a6a7a;
+    --deep:      #0a0a12;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Press Start 2P', monospace;
+}
+
+/* CRT scanlines */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.12) 2px,
+        rgba(0, 0, 0, 0.12) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Canvas pixel rendering */
+canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Blink animation for prompts */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Loading spinner */
+@keyframes pixelspin {
+    to { transform: rotate(360deg); }
+}

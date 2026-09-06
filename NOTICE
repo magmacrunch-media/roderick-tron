@@ -1,0 +1,51 @@
+Roderick Tron
+Copyright 2026 magmacrunch media
+
+
+THE LICENCE
+
+Everything in this repository -- the browser version in web/, the tests, and the
+documentation -- is licensed under the PolyForm Noncommercial License 1.0.0, in
+the LICENSE file beside this one.
+
+Read it, learn from it, build on it, play with it. Any noncommercial purpose is
+permitted, and that includes personal projects, teaching and research. What is
+not permitted is commercial use: selling the game or a derivative of it,
+shipping it inside a product, or running it as part of a business.
+
+
+WHAT IS RESERVED OUTRIGHT
+
+The game's name, the Roderick Tron and magmacrunch names and marks, the
+character, and the visual design of the city and its palette.
+
+Those are Copyright 2026 magmacrunch media, all rights reserved. They are in the
+repository because the game is built from them, not because they are offered for
+reuse -- the licence covers the software, and it grants no trademark rights.
+
+
+THE MUSIC
+
+"Roderick Tron", by Jimmi, from the album JIMMI (2026). A magmacrunch media
+record label release rather than an outside licence, and reserved the same way
+as everything in the section above.
+
+The track is not stored in this repository. The browser build loads it from the
+website's own copy at music/jukebox/songs/, so there is one file rather than
+two that can drift apart.
+
+The sound EFFECTS are not recordings at all. They are generated from oscillators
+at runtime in web/js/sfx.js, so there is nothing to license, nothing to
+download, and the note pickups can be pitched -- collecting a trail of notes
+walks up a pentatonic scale, which is the closest this game gets to being about
+what it is about.
+
+
+THIRD-PARTY COMPONENTS
+
+Press Start 2P, by CodeMan38, licensed under the SIL Open Font License 1.1.
+Loaded from Google Fonts by the page rather than shipped here as a file.
+
+adenosine, the browser engine this game uses for audio, is Copyright 2026
+magmacrunch media under the Apache License 2.0. It is a separate repository and
+keeps that licence -- the engines are meant to be reused; this game is not.
