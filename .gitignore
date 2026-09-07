@@ -5,3 +5,13 @@ build/
 *.dol
 *.elf
 *.map
+
+# The terminal version. Python build and test artefacts only -- tui/ itself is
+# source and is tracked.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+.venv/

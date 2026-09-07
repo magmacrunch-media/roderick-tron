@@ -16,3 +16,12 @@
 *.sh        text eol=lf
 *.yml       text eol=lf
 *.yaml      text eol=lf
+
+# tui/ is Python, and unlike web/ it is not byte-copied anywhere, so nothing
+# has to agree with it. Pin it: core.autocrlf is true on the machines this is
+# written on and does NOT normalise on the way in, so a working copy that has
+# drifted to CRLF stages a whole-file rewrite -- 236 insertions on a file where
+# five lines changed -- which buries the real edit. Committed content is LF
+# either way; this keeps the checkout LF too, so the drift never starts.
+*.py        text eol=lf
+*.toml      text eol=lf
