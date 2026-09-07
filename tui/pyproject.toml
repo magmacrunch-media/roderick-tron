@@ -35,14 +35,17 @@ dev = ["pytest>=7.0", "ruff>=0.6"]
 [project.scripts]
 roderick-tron = "tron.__main__:main"
 
-# The entry point that puts it in the arcade menu is deliberately absent until
-# the screens exist. It is metadata nothing validates at install time, so
-# declaring it early makes the package install cleanly and then report a
-# cabinet that cannot be loaded — the mistake jovian's pyproject records.
-# Phase 04 adds:
+# Found by a launcher enumerating installed games. Declaring it costs nothing
+# when the game is run on its own, and is the whole of what makes it appear in
+# an arcade menu — see magmacrunch.engine.arcade.
 #
-#     [project.entry-points."magmacrunch.games"]
-#     roderick-tron = "tron.arcade:GAME"
+# Held back until the screens existed, because an entry point is metadata
+# nothing validates at install time: declared early, the package installs
+# cleanly and then `magmacrunch --list` reports a cabinet that cannot be
+# loaded. tests/test_packaging.py checks the target by reading this file rather
+# than importing it, so the check needs no engine either.
+[project.entry-points."magmacrunch.games"]
+roderick-tron = "tron.arcade:GAME"
 
 [tool.hatch.build.targets.wheel]
 packages = ["tron"]

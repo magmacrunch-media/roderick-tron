@@ -1,0 +1,142 @@
+# Publishes the terminal version to PyPI as `magmacrunch-roderick-tron`.
+#
+# Only `tui/` ships. `web/` is deployed by the website repo, which copies it
+# into arcade/ — so a tag here releases one of the two versions in this repo
+# and the tag says which: `tui-v0.1.0`, not `v0.1.0`. That prefix leaves room
+# for the other one to grow its own release path later without a tag namespace
+# collision, and matches the other four cabinets.
+#
+# Trusted Publishing: GitHub mints a short-lived identity token that PyPI
+# verifies against a publisher configured for this repo. No API token, no
+# repository secret, nothing to rotate. **The publisher has to exist on PyPI
+# before the first run**, and for a project that does not exist yet that means
+# a "pending publisher" (pypi.org → Your account → Publishing) naming owner
+# `magmacrunch-media`, repository `roderick-tron`, workflow `release.yml` and a
+# blank environment. Skip it and every step below passes and the publish alone
+# fails with `invalid-publisher` — nothing is published when that happens, so
+# the version number stays free and a re-run once the publisher exists is
+# enough.
+#
+# Release this one BEFORE magmacrunch 0.9.0. The arcade depends on its
+# cabinets, so an arcade published before this package exists is an
+# unresolvable install for everybody, not only for people who wanted this game.
+
+name: Release
+
+on:
+  push:
+    tags: ["tui-v*"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Node is not optional here. This game's rules are a transcription of
+      # web/js/, and two of its suites check the Python against the real
+      # JavaScript by running it. Without node they skip — quietly, and a
+      # release is the last place a silently skipped correctness check is
+      # acceptable. See the step that asserts they ran.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # A tag that disagrees with the packaged version publishes something
+      # nobody can find again. Cheaper to fail here than to yank a release.
+      - name: Verify the tag matches the package version
+        if: startsWith(github.ref, 'refs/tags/')
+        working-directory: tui
+        run: |
+          TAG="${GITHUB_REF_NAME#tui-v}"
+          PKG=$(python -c "import tomllib,pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version'])")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "Tag $TAG does not match pyproject version $PKG"
+            exit 1
+          fi
+
+      # The source of truth, first. If the browser build's own rules have
+      # regressed then the port is faithful to something broken, and the two
+      # suites below would happily agree with each other about it.
+      - name: The web build's rules
+        working-directory: web/tests
+        run: node test-simulation.js
+
+      # The level art is generated from web/js/levels.js. A release built from
+      # a stale copy ships a game whose levels differ from the browser's, and
+      # the reachability proof — the guarantee that each level can be finished
+      # at all — would no longer apply to what was published.
+      - name: The levels match the web build
+        run: |
+          cd tui && python tools/gen_levels.py && cd ..
+          if ! git diff --exit-code -- tui/tron/levels.py; then
+            echo "::error::tui/tron/levels.py is out of step with web/js/levels.js"
+            exit 1
+          fi
+
+      - name: Test
+        working-directory: tui
+        run: |
+          pip install -e ".[dev]"
+          python -m pytest -q
+          ruff check .
+
+      # The suites above pass whether or not the oracle ran, because it skips
+      # itself where node is absent. That is right for a laptop and wrong for a
+      # release: publishing a port whose agreement with the shipped JavaScript
+      # went unchecked is the one failure this repository is arranged to
+      # prevent. So it is run again on its own and a skip is made fatal.
+      - name: The port really was checked against the JavaScript
+        working-directory: tui
+        run: |
+          out=$(python -m pytest tests/test_oracle.py tests/test_reachable.py -q)
+          echo "$out"
+          if echo "$out" | grep -q "skipped"; then
+            echo "::error::the oracle skipped - node missing, so the port went unchecked"
+            exit 1
+          fi
+
+      - run: pip install build twine
+      - name: Build
+        working-directory: tui
+        run: python -m build
+
+      # PolyForm requires the notice to travel with the distribution, and the
+      # licence lives at the repo root where it also covers web/. tui/LICENSE
+      # and tui/NOTICE are copies kept for this reason. Assert they made it in
+      # rather than trusting they did.
+      - name: The licence is in the wheel
+        working-directory: tui
+        run: |
+          python - <<'PY'
+          import glob, zipfile
+          wheel = glob.glob("dist/*.whl")[0]
+          names = zipfile.ZipFile(wheel).namelist()
+          for want in ("LICENSE", "NOTICE"):
+              assert any(n.endswith(f"licenses/{want}") for n in names), \
+                  f"{want} missing from {wheel}"
+          print("licence and notice present")
+          PY
+
+      - name: Check
+        working-directory: tui
+        run: twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: tui/dist
+          skip-existing: true
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create ${{ github.ref_name }} --generate-notes
