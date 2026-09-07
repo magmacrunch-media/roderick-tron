@@ -89,6 +89,9 @@ class Player:
         #: :data:`tron.config.RUN_CHARGE_FRAMES`.
         self.charge = 0.0
         self.charge_dir = 0
+        #: Frames since a direction was last asked for. See
+        #: :data:`tron.config.CHARGE_GRACE_FRAMES`.
+        self.charge_idle = 0.0
         #: Set while a bell holds him. Normal physics is suspended: the bell
         #: owns his position until it fires.
         self.captured = None
@@ -145,14 +148,28 @@ class Player:
         return C.WALK_MAX + (C.RUN_MAX - C.WALK_MAX) * t
 
     def _accrue_charge(self, direction: int, dt: float) -> None:
-        if direction == 0 or direction != self.charge_dir:
-            # Stopping or turning spends it. Reversing especially: TURN_BOOST
-            # already makes a direction change bite, and letting the charge
-            # survive one would make a run something you switch on once and
-            # never lose.
+        if direction != 0 and direction != self.charge_dir:
+            # Turning spends it outright. TURN_BOOST already makes a direction
+            # change bite, and letting a run-up survive a reversal would make
+            # the run something you switch on once and never lose.
             self.charge = 0.0
             self.charge_dir = direction
+            self.charge_idle = 0.0
             return
+
+        if direction == 0:
+            # No direction this frame -- which in a terminal usually means the
+            # keyboard has gone quiet for its repeat delay rather than that
+            # the player let go. Spending the charge here would make a run
+            # impossible to build; see CHARGE_GRACE_FRAMES for the whole
+            # argument. A genuine release simply keeps producing nothing, and
+            # the charge lapses one window later.
+            self.charge_idle += dt
+            if self.charge_idle > C.CHARGE_GRACE_FRAMES:
+                self.charge = 0.0
+                self.charge_dir = 0
+            return
+        self.charge_idle = 0.0
         # Only the ground builds speed. Airborne it is held rather than reset,
         # so a running jump lands still running instead of touching down at a
         # walk with the momentum it earned still in vx.
@@ -212,8 +229,20 @@ class Player:
         # ── Roll ────────────────────────────────────────────────────
         # Committal on purpose: it locks facing and steering for its duration,
         # so the reward for the extra distance is that you had to mean it.
+        # `coyote > 0` rather than `grounded` -- the same fix, and for the same
+        # reason, as the charge grace above. A body running on flat brick
+        # alternates grounded true/false every frame, so gating the roll on it
+        # threw away 53% of roll presses at random: 56 accepted out of 120
+        # frames of running. The roll is the move ROOFTOP REQUIEM's seven-tile
+        # gap cannot be crossed without, so half of those presses vanishing is
+        # the hardest jump in the game failing for a reason no player can see.
+        #
+        # Fixed in web/js/player.js too, in the same commit. Keeping the two in
+        # step is what the oracle is for, and it is what caught the difference
+        # the moment only one of them had changed.
         if (intent.roll and not self.rolling
-                and self.roll_cooldown <= 0 and self.grounded):
+                and self.roll_cooldown <= 0
+                and (self.grounded or self.coyote > 0)):
             self.rolling = True
             self.roll_timer = C.ROLL_FRAMES
             if direction != 0:

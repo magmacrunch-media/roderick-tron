@@ -99,12 +99,19 @@ class Camera:
         """Never show past the edges of the level."""
         self.x = max(0.0, min(self.map.w - self.view_w, self.x))
         self.y = max(0.0, min(self.map.h - self.view_h, self.y))
-        # A level smaller than the window pins to the origin rather than going
-        # negative, which is what the max/min above would otherwise produce.
         if self.map.w < self.view_w:
             self.x = 0.0
         if self.map.h < self.view_h:
-            self.y = 0.0
+            # A level shorter than the window sits on the BOTTOM of it, not the
+            # top. The web build pins this case to the origin, but it can never
+            # reach it -- its canvas is 270px and the shortest level is 288 --
+            # so the branch is dead there and free to be decided here.
+            #
+            # Bottom is the right answer because the spare rows are sky. Pinned
+            # to the top instead, ROOFTOP REQUIEM leaves four blank rows under
+            # its brick and the whole city reads as floating above the floor of
+            # the terminal.
+            self.y = self.map.h - self.view_h
 
     # ── Projection ──────────────────────────────────────────────────
 

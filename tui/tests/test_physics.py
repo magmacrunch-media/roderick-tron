@@ -218,6 +218,40 @@ def test_speed_starts_at_a_walk_and_ramps_to_a_run():
     assert p.max_speed() == pytest.approx(C.RUN_MAX)
 
 
+def test_a_run_survives_the_keyboards_repeat_delay():
+    """The gap in the middle of a held key must not reset the run.
+
+    A terminal sees one press, then silence for ~500ms, then repeats. Without
+    the grace window the charge is spent during that silence and a run can
+    never be built at all -- which would quietly delete the verb that replaced
+    the SHIFT modifier, on a real keyboard only, where no other test looks.
+    """
+    m = Tilemap(LEVELS[0])
+    p = Player(m)
+    p.grounded = True
+    run(p, Intent(right=True), C.RUN_CHARGE_FRAMES + 5)
+    assert p.max_speed() == pytest.approx(C.RUN_MAX)
+
+    # 30 frames of nothing: the repeat delay, as the engine's TuiInput sees it.
+    run(p, Intent(), 30)
+    assert p.max_speed() == pytest.approx(C.RUN_MAX), "the repeat delay ate the run"
+
+
+def test_a_real_release_does_eventually_spend_it():
+    """The grace is a window, not an exemption."""
+    m = Tilemap(LEVELS[0])
+    p = Player(m)
+    p.grounded = True
+    run(p, Intent(right=True), C.RUN_CHARGE_FRAMES + 5)
+    run(p, Intent(), int(C.CHARGE_GRACE_FRAMES) + 5)
+    assert p.max_speed() == pytest.approx(C.WALK_MAX)
+
+
+def test_the_grace_window_clears_the_repeat_delay():
+    """Pinned, because the constant is only correct relative to that delay."""
+    assert C.CHARGE_GRACE_FRAMES / 60.0 > 0.5, "shorter than a typical repeat delay"
+
+
 def test_turning_spends_the_charge():
     """A run-up is a commitment; reversing is how you give it up."""
     m = Tilemap(LEVELS[0])
@@ -246,6 +280,41 @@ def test_earned_speed_fits_the_tightest_runup():
             break
     tiles = (p.box.x - start) / C.TILE
     assert tiles < 9, f"took {tiles:.1f} tiles to reach full speed"
+
+
+def test_a_roll_press_is_almost_never_dropped():
+    """The roll must not depend on which frame you happened to press it.
+
+    ``grounded`` alternates true/false every frame on flat brick -- gravity
+    sinks the body 0.44px, too little for tile_range's bottom-1 row to reach
+    the floor tile, and the next step snaps it back. Gating the roll on
+    ``grounded`` therefore threw away 53% of roll presses at random: 56 of 120
+    frames of running accepted one.
+
+    That is the hardest jump in the game failing half the time for a reason no
+    player can perceive, since ROOFTOP REQUIEM's seven-tile gap cannot be
+    crossed any other way. Reading it through ``coyote`` -- refreshed on each
+    of those one-frame landings -- takes it to 118 of 120, the two misses being
+    the roll's own cooldown.
+
+    Fixed in web/js/player.js at the same time, which is why the oracle stays
+    green: the browser had the same bug.
+    """
+    m = Tilemap(LEVELS[0])
+    p = Player(m)
+    p.grounded = True
+    p.coyote = C.COYOTE_FRAMES
+    accepted = offered = 0
+    for _ in range(120):
+        p.update(Intent(right=True), 1.0)
+        if p.rolling:
+            continue
+        offered += 1
+        if (p.grounded or p.coyote > 0) and p.roll_cooldown <= 0:
+            accepted += 1
+    assert accepted / offered > 0.9, (
+        f"only {accepted} of {offered} frames would accept a roll"
+    )
 
 
 def test_a_roll_still_beats_a_run():
@@ -445,12 +514,21 @@ def test_the_camera_never_shows_past_the_level():
         assert 0 <= cam.y <= max(0, m.h - view_h)
 
 
-def test_a_level_shorter_than_the_window_pins_to_the_origin():
+def test_a_level_shorter_than_the_window_sits_on_the_bottom_of_it():
+    """The spare rows are sky, so they belong above the level and not below.
+
+    Pinned to the origin instead — which is what the web build's clamp says,
+    in a branch it can never reach — ROOFTOP REQUIEM leaves four blank rows
+    under its brick on an 80x24 terminal, and the whole city reads as floating
+    above the floor.
+    """
     m = Tilemap(LEVELS[0])
     p = Player(m)
     cam = cells.Camera(m, m.w * 2, m.h * 2)
     cam.snap_to(p)
-    assert (cam.x, cam.y) == (0.0, 0.0)
+    assert cam.x == 0.0, "a narrow level still starts at the left edge"
+    assert cam.y == m.h - cam.view_h, "the level's floor should be the window's"
+    assert cam.y + cam.view_h == m.h
 
 
 def test_the_tile_window_covers_the_visible_columns():

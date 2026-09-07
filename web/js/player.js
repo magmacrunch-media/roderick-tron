@@ -92,7 +92,22 @@ Player.prototype.update = function (dt) {
     // ── Roll ──────────────────────────────────────────────
     // Committal on purpose: it locks facing and steering for its duration, so
     // the reward for the extra distance is that you had to mean it.
-    if (Input.roll() && !this.rolling && this.rollCooldown <= 0 && this.grounded) {
+    // `coyote > 0` rather than `grounded`, and it is not a forgiveness tweak —
+    // it is a bug fix. A body at rest or running on flat brick alternates
+    // grounded true/false EVERY FRAME: gravity sinks it 0.44px, too little for
+    // the bottom-1 row of tileRange to reach the floor tile, so the next step
+    // snaps it back. Gating the roll on `grounded` therefore threw away 53% of
+    // roll presses at random — measured, 56 accepted out of 120 frames of
+    // running — and the roll is the move the seven-tile gap in ROOFTOP REQUIEM
+    // cannot be crossed without.
+    //
+    // coyote is refreshed on every one of those landings, so it stays positive
+    // across the flicker and reads "on the ground, or only just off it", which
+    // is the question actually being asked. It also lets a roll start inside
+    // the coyote window off a real ledge, which is the technique this game
+    // already documents rather than a new one.
+    if (Input.roll() && !this.rolling && this.rollCooldown <= 0
+            && (this.grounded || this.coyote > 0)) {
         this.rolling = true;
         this.rollTimer = CONFIG.ROLL_FRAMES;
         if (dir !== 0) this.facing = dir;

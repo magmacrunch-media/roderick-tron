@@ -81,6 +81,33 @@ TURN_BOOST = 1.7  # reversing bites harder than accelerating
 #: tiles of margin. ``test_earned_speed_fits_the_tightest_runup`` pins it.
 RUN_CHARGE_FRAMES = 44
 
+#: How long a run survives an input gap, in 60fps frames.
+#:
+#: **This exists because a keyboard goes quiet in the middle of a held key.**
+#: A terminal sees one press, then nothing for the repeat delay -- around
+#: 500ms, or 30 frames -- before repeats begin every 30-50ms. The engine's
+#: ``TuiInput`` approximates a held key by keeping the button set for
+#: ``hold_ms``, and that leaves a genuine bind:
+#:
+#:   * ``hold_ms`` under the delay leaves a dead gap in the middle of a held
+#:     direction. The direction reads as zero, and without this constant the
+#:     charge is spent -- so the run resets every time and can never build.
+#:   * ``hold_ms`` over the delay closes the gap but leaves a tail after a
+#:     real release: 550ms of it is 33 frames, nearly six tiles of coasting
+#:     past where the player let go, which over a pit is fatal.
+#:
+#: The way out is that those are two different requirements. Stopping needs a
+#: short latch; *earning speed* needs a long memory. So the cabinet asks for a
+#: short ``hold_ms`` (movement stops promptly, ~2.8 tiles) while the charge
+#: alone rides out the gap here. A press that is genuinely released simply
+#: stops producing input, and the charge lapses one grace window later.
+#:
+#: 36 frames is 600ms: past the 500ms delay with margin, and short enough that
+#: letting go and pressing again the other way still reads as a fresh run.
+#: A real *reversal* spends the charge instantly and does not consult this --
+#: turning around has always been the way to give up a run-up.
+CHARGE_GRACE_FRAMES = 36
+
 # ── Jump ────────────────────────────────────────────────────────────
 #
 # Airtime is 2*|v|/g frames and height v^2/(2g) px. Height is what the level's
