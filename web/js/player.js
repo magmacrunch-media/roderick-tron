@@ -81,7 +81,13 @@ Player.prototype.update = function (dt) {
     if (this.invincible > 0) this.invincible -= dt;
     if (this.shootCooldown > 0) this.shootCooldown -= dt;
     if (this.shakeFrames > 0) this.shakeFrames -= dt;
-    if (Input.jump()) this.jumpBuffer = CONFIG.JUMP_BUFFER_FRAMES;
+    // Read the edge ONCE. Input.jump() is wasPressed(), which clears the flag
+    // as it reports it, so a second call in the same update always returns
+    // false — which is exactly what the drop-through check below used to do,
+    // and why holding down and pressing jump on a one-way platform did
+    // nothing at all.
+    const jumpPressed = Input.jump();
+    if (jumpPressed) this.jumpBuffer = CONFIG.JUMP_BUFFER_FRAMES;
 
     // ── Roll ──────────────────────────────────────────────
     // Committal on purpose: it locks facing and steering for its duration, so
@@ -192,7 +198,7 @@ Player.prototype.update = function (dt) {
     this.map.moveX(this.box, this.vx * dt);
 
     const wasGrounded = this.grounded;
-    const dropping = Input.down() && Input.jump();
+    const dropping = Input.down() && jumpPressed;
     const land = this.map.moveY(this.box, this.vy * dt, dropping);
 
     if (land.ground) {
