@@ -1,0 +1,97 @@
+# CI for Roderick Tron.
+#
+# Until this repository existed the simulation suite ran nowhere automatically:
+# the game lived inside the website repo, whose workflows do not reach into
+# arcade/*/tests/. Sixty-four checks — including an exhaustive proof that each
+# level's exit and every one of its pickups is reachable from the spawn — were
+# run only by hand.
+#
+# That proof is the reason this file matters more here than the count suggests.
+# The game was an endless auto-runner and is now a hand-authored platformer,
+# which changed what is worth proving: an unclearable gap in a generator is a
+# probability, and an unclearable gap in an authored level is a wall that every
+# player meets.
+#
+# There is no wii/ job because there is no wii/ port. Roderick Tron is the one
+# game here with a tui/ and no Wii sibling.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  web:
+    name: web simulation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # No dependencies and no package.json: the suite loads the shipped
+      # modules into a vm context using only node's standard library, which is
+      # what keeps it honest about testing what ships.
+      - name: The rules, headless
+        working-directory: web/tests
+        run: node test-simulation.js
+
+  tui:
+    name: tui rules (no engine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Deliberately not `pip install -e .`: the rules claim to need no engine,
+      # and installing the package would quietly pull magmacrunch in and make
+      # that claim untestable here. `python -m pytest` puts the working
+      # directory on sys.path, which is all the import needs.
+      #
+      # Node joins this job at phase 02, when the oracle starts driving the
+      # shipped JavaScript and the Python port from the same seeded input.
+      - run: pip install pytest ruff
+
+      - name: The rules, with no engine on the machine
+        working-directory: tui
+        run: python -m pytest -q
+
+      - name: Lint
+        working-directory: tui
+        run: ruff check .
+
+  levels:
+    name: levels are in step
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # tron/levels.py is generated from web/js/levels.js. Edit the level art
+      # without regenerating and the two versions of the game drift apart
+      # silently — and the web suite's reachability proof, which is the whole
+      # guarantee that a level is completable, stops applying to the terminal
+      # one while still passing.
+      #
+      # Regenerating and diffing is the cheapest way to make that impossible.
+      # The generator round-trips its own output, so this also catches a
+      # levels.js that has changed shape enough to parse wrongly.
+      - name: Regenerate from the web build
+        working-directory: tui
+        run: python tools/gen_levels.py
+
+      - name: tron/levels.py matches web/js/levels.js
+        run: |
+          if ! git diff --exit-code -- tui/tron/levels.py; then
+            echo "::error file=tui/tron/levels.py::out of step with web/js/levels.js — run tui/tools/gen_levels.py and commit the result"
+            exit 1
+          fi
+          echo "levels are in step"
