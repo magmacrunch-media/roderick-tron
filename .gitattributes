@@ -25,3 +25,4 @@
 # either way; this keeps the checkout LF too, so the drift never starts.
 *.py        text eol=lf
 *.toml      text eol=lf
+*.mjs       text eol=lf

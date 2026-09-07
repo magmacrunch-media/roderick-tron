@@ -49,18 +49,37 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Node is here for the oracle: tests/test_oracle.py regenerates a trace
+      # by running the shipped browser modules in a vm, then replays the same
+      # seeded input against the port and compares frame by frame. Without node
+      # those tests skip themselves rather than fail, which on a runner would
+      # mean the strongest guarantee in the suite quietly not running.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       # Deliberately not `pip install -e .`: the rules claim to need no engine,
       # and installing the package would quietly pull magmacrunch in and make
       # that claim untestable here. `python -m pytest` puts the working
       # directory on sys.path, which is all the import needs.
-      #
-      # Node joins this job at phase 02, when the oracle starts driving the
-      # shipped JavaScript and the Python port from the same seeded input.
       - run: pip install pytest ruff
 
       - name: The rules, with no engine on the machine
         working-directory: tui
         run: python -m pytest -q
+
+      # The oracle and the reachability search skip themselves when node or
+      # web/ is missing. That is right for an installed wheel and wrong here,
+      # so fail the job if they did not actually run.
+      - name: The oracle really ran
+        working-directory: tui
+        run: |
+          python -m pytest -q tests/test_oracle.py tests/test_reachable.py \
+            -o addopts= --no-header -rs 2>&1 | tee /tmp/out.txt
+          if grep -qi "skipped" /tmp/out.txt; then
+            echo "::error::oracle or reachability tests skipped — node or web/ missing"
+            exit 1
+          fi
 
       - name: Lint
         working-directory: tui
