@@ -255,6 +255,53 @@ def test_a_roll_still_beats_a_run():
     assert reach(C.WALK_MAX) < 4 < reach(C.RUN_MAX) < 7 < reach(C.ROLL_MAX)
 
 
+def _pilot(use_roll: bool):
+    """Drive the last stretch of ROOFTOP REQUIEM into its seven-tile gap.
+
+    Holds right, jumps off the lip, and optionally rolls into it. Returns the
+    tile he ends on, and whether he fell.
+    """
+    m = Tilemap(LEVELS[0])
+    p = Player(m)
+    p.box.x = 75 * C.TILE + 2  # the near platform, nine tiles of run-up
+    p.box.y = 13 * C.TILE + C.TILE - C.PLAYER_H
+    p.grounded = True
+    p.coyote = C.COYOTE_FRAMES
+
+    for _ in range(400):
+        on_ground = p.grounded or p.coyote > 0
+        lip = not m.has_footing(p.box.x + p.box.w + 2, p.box.y, 1, p.box.h)
+        want_roll = (
+            use_roll and on_ground and not p.rolling and p.box.x / C.TILE > 80
+        )
+        p.update(
+            Intent(right=True, jump=on_ground and lip, roll=want_roll), 1.0
+        )
+        if p.box.y > m.h:
+            return p.box.x / C.TILE, True
+    return p.box.x / C.TILE, False
+
+
+def test_the_widest_gap_needs_a_roll():
+    """The end-to-end proof that earned speed kept the level's skill gradient.
+
+    ROOFTOP REQUIEM's last gap is seven tiles. A run reaches 5.67 and a roll
+    8.35, so the gap is meant to be a roll and nothing else -- if earned speed
+    had quietly made a run enough, the level would have lost its hardest
+    decision without anybody noticing.
+
+    Both halves matter. The run must fail and the roll must succeed; a change
+    that made the gap crossable at a run would pass a one-sided test.
+    """
+    ran, ran_fell = _pilot(use_roll=False)
+    assert ran_fell, f"a run alone crossed the seven-tile gap, reaching {ran:.1f}"
+    assert ran > 88, f"fell far too early, at tile {ran:.1f}"
+
+    rolled, rolled_fell = _pilot(use_roll=True)
+    assert not rolled_fell, f"a roll failed to cross, falling at tile {rolled:.1f}"
+    assert rolled > 91, f"cleared the gap but stopped at tile {rolled:.1f}"
+
+
 # ── Collision ───────────────────────────────────────────────────────
 
 
