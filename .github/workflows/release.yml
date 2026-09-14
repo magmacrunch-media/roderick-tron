@@ -35,8 +35,8 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -45,7 +45,7 @@ jobs:
       # JavaScript by running it. Without node they skip — quietly, and a
       # release is the last place a silently skipped correctness check is
       # acceptable. See the step that asserts they ran.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "20"
 
