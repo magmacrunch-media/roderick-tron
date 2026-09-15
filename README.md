@@ -117,6 +117,12 @@ node web/tests/test-simulation.js
 | Z | fire a note |
 | M | music and effects on/off |
 
+
+## Support This Project
+
+If you find this useful, consider supporting its development:
+
+[![Sponsor](https://img.shields.io/badge/%E2%9D%A4_Sponsor-pink)](https://github.com/sponsors/magmacrunch-media)
 ## Licence
 
 PolyForm Noncommercial 1.0.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
